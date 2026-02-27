@@ -1,3 +1,6 @@
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { CONFIG } from '@/lib/config';
 import { GenerateRequest, GenerateResponse } from '@/lib/types';
