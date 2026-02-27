@@ -10,7 +10,7 @@ export default function Home() {
     productDescription: '',
     targetAudience: '',
     toneLevel: 1,
-    useCase: 'facebook_post',
+    contentType: 'facebook_post',
   });
 
   const [result, setResult] = useState<string>('');
@@ -33,7 +33,20 @@ export default function Home() {
       const data: GenerateResponse = await response.json();
       if (data.error) throw new Error(data.error);
 
-      setResult(data.content);
+      // 格式化生成結果
+      const formattedResult = `
+${data.mainContent}
+
+---
+建議變體：
+${data.variants.join('\n\n')}
+
+---
+Hashtags:
+${data.hashtags.join(' ')}
+      `.trim();
+
+      setResult(formattedResult);
     } catch (err: any) {
       setError(err.message || '發生錯誤，請稍後再試');
     } finally {
@@ -86,8 +99,8 @@ export default function Home() {
             <div className="form-group">
               <label>內容用途</label>
               <select
-                value={formData.useCase}
-                onChange={(e) => setFormData({ ...formData, useCase: e.target.value as any })}
+                value={formData.contentType}
+                onChange={(e) => setFormData({ ...formData, contentType: e.target.value as any })}
               >
                 {USE_CASES.map(uc => <option key={uc.value} value={uc.value}>{uc.label}</option>)}
               </select>
