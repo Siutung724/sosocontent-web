@@ -1,258 +1,151 @@
-'use client';
+import { createClient } from '@/lib/supabase-server';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import Ticker from '@/components/Ticker';
+import LandingOverlays from '@/components/LandingOverlays';
 
-import React, { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase-browser';
-import { GenerateRequest, GenerateResponse } from '@/lib/types';
-import { USE_CASES, TONE_LEVELS, INDUSTRIES } from '@/lib/constants';
-import { CONFIG } from '@/lib/config';
-import type { User } from '@supabase/supabase-js';
+// ── Feature grid data ──────────────────────────────────────────────────────
 
-export default function Home() {
-  const supabase = createClient();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
+const FEATURES = [
+  {
+    icon: '📅',
+    title: '7日社交媒體計劃',
+    desc: '輸入品牌資料，AI 自動生成一週 IG、Facebook、LinkedIn 貼文，每篇附主題、正文、Hashtag 及配圖建議。',
+  },
+  {
+    icon: '✍️',
+    title: '品牌故事生成',
+    desc: '輸入你的品牌背景，AI 以地道廣東話撰寫感人品牌故事，提升客戶信任感與品牌認同。',
+  },
+  {
+    icon: '🚀',
+    title: '產品推廣文案',
+    desc: '新品上市、限時優惠、活動推廣一鍵生成，多款語氣選擇，配合不同行銷場景。',
+  },
+];
 
-  const [formData, setFormData] = useState<GenerateRequest>({
-    brandName: '',
-    productDescription: '',
-    targetAudience: '',
-    industry: 'general',
-    toneLevel: 1,
-    contentType: 'facebook_post',
-  });
+// ── Landing page ───────────────────────────────────────────────────────────
 
-  const [result, setResult] = useState<string>('');
-  const [error, setError] = useState('');
-  const [history, setHistory] = useState<any[]>([]);
-
-  // 監聽登入狀態
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setAuthLoading(false);
-    };
-    getUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // 獲取歷史紀錄
-  const fetchHistory = async () => {
-    if (user) {
-      try {
-        const res = await fetch('/api/history?limit=10');
-        const data = await res.json();
-        if (Array.isArray(data)) setHistory(data);
-      } catch (err) {
-        console.error('Failed to fetch history:', err);
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchHistory();
-  }, [user]);
-
-  const handleSignIn = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`,
-      },
-    });
-  };
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setHistory([]);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    setResult('');
-
-    try {
-      const response = await fetch(CONFIG.CONTENT_API_BASE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      const data: GenerateResponse = await response.json();
-      if (data.error) throw new Error(data.error);
-
-      const formattedResult = formatResult(data);
-      setResult(formattedResult);
-
-      // 生成成功後刷新歷史
-      if (user) fetchHistory();
-
-    } catch (err: any) {
-      setError(err.message || '發生錯誤，請稍後再試');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatResult = (data: any) => {
-    return `
-${data.mainContent}
-
----
-建議變體：
-${data.variants.join('\n\n')}
-
----
-Hashtags:
-${data.hashtags.join(' ')}
-    `.trim();
-  };
-
-  const handleSelectHistory = (item: any) => {
-    setResult(formatResult(item.result));
-    setFormData({
-      ...formData,
-      brandName: item.meta?.brandName || '',
-      industry: item.meta?.industry || 'general',
-      contentType: item.type
-    });
-  };
+export default async function LandingPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) redirect('/dashboard');
 
   return (
-    <main className="container">
-      <header className="hero">
-        <div className="auth-nav">
-          {authLoading ? null : user ? (
-            <div className="user-info">
-              <span>👋 {user.user_metadata?.full_name || user.email}</span>
-              <button onClick={handleSignOut} className="btn-text">登出</button>
-            </div>
-          ) : (
-            <button onClick={handleSignIn} className="btn-text">用 Google 登入 🔑</button>
-          )}
+    <div className="min-h-screen bg-body text-primary flex flex-col">
+
+      {/* Layer 1 — Ticker */}
+      <Ticker />
+
+      {/* ── Simple nav ── */}
+      <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">💬</span>
+          <span className="font-bold text-primary text-sm tracking-wide">sosocontent.ai</span>
         </div>
-        <h1>sosocontent.ai 🇭🇰</h1>
-        <p>專為香港中小企打造的地道廣東話 AI 營銷助手</p>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/auth"
+            className="text-sm text-secondary hover:text-primary transition-colors"
+          >
+            登入
+          </Link>
+          <Link
+            href="/auth"
+            className="text-sm bg-cta text-body font-semibold px-4 py-1.5 rounded-lg hover:bg-cta/90 transition-colors"
+          >
+            免費開始
+          </Link>
+        </div>
       </header>
 
-      <section className="main-grid">
-        <div className="sidebar-container">
-          <form onSubmit={handleSubmit} className="card glass">
-            <div className="form-group">
-              <label>品牌名稱</label>
-              <input
-                type="text"
-                placeholder="例如：街頭小食店"
-                value={formData.brandName}
-                onChange={(e) => setFormData({ ...formData, brandName: e.target.value })}
-                required
-              />
-            </div>
+      {/* ── Hero ── */}
+      <main className="flex-1 flex flex-col items-center justify-center text-center px-6 pt-12 pb-24">
+        <div className="max-w-3xl mx-auto">
 
-            <div className="form-group">
-              <label>產品/服務描述</label>
-              <textarea
-                placeholder="例如：新鮮熱辣雞蛋仔，外脆內軟..."
-                rows={3}
-                value={formData.productDescription}
-                onChange={(e) => setFormData({ ...formData, productDescription: e.target.value })}
-                required
-              />
-            </div>
+          {/* Eyebrow tag */}
+          <span className="inline-block text-xs font-bold text-cta border border-cta/30 bg-cta/10 px-3 py-1 rounded-full mb-6 tracking-widest uppercase">
+            香港首個廣東話 AI 內容助手
+          </span>
 
-            <div className="form-group">
-              <label>目標客群</label>
-              <input
-                type="text"
-                placeholder="例如：18-35歲、鍾意搵食嘅年輕人"
-                value={formData.targetAudience}
-                onChange={(e) => setFormData({ ...formData, targetAudience: e.target.value })}
-              />
-            </div>
+          {/* Headline */}
+          <h1 className="text-4xl md:text-6xl font-extrabold text-primary leading-tight mb-6">
+            讓 AI 幫你寫<br />
+            <span className="text-cta">每一篇貼文</span>
+          </h1>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label>所屬行業</label>
-                <select
-                  value={formData.industry}
-                  onChange={(e) => setFormData({ ...formData, industry: e.target.value as any })}
-                >
-                  {INDUSTRIES.map(ind => <option key={ind.value} value={ind.value}>{ind.label}</option>)}
-                </select>
-              </div>
+          {/* Subheadline */}
+          <p className="text-lg text-secondary leading-relaxed max-w-xl mx-auto mb-4">
+            專為香港中小企打造，一鍵生成地道廣東話品牌文案、社交媒體計劃及產品推廣內容。
+          </p>
 
-              <div className="form-group">
-                <label>內容平台 / 用途</label>
-                <select
-                  value={formData.contentType}
-                  onChange={(e) => setFormData({ ...formData, contentType: e.target.value as any })}
-                >
-                  {USE_CASES.map(uc => <option key={uc.value} value={uc.value}>{uc.label}</option>)}
-                </select>
-              </div>
-            </div>
+          {/* Bullets */}
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-secondary mb-10">
+            {['✓ 無需寫作經驗', '✓ 廣東話 AI 生成', '✓ 免費開始使用'].map(b => (
+              <span key={b} className="text-cta/80">{b}</span>
+            ))}
+          </div>
 
-            <div className="form-group">
-              <label>語氣正式度 (0-3)</label>
-              <input
-                type="range"
-                min="0" max="3"
-                value={formData.toneLevel}
-                onChange={(e) => setFormData({ ...formData, toneLevel: parseInt(e.target.value) as any })}
-              />
-              <span className="tone-hint">
-                {TONE_LEVELS.find(t => t.value === formData.toneLevel)?.label}
-              </span>
-            </div>
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/auth"
+              className="w-full sm:w-auto bg-cta text-body font-bold text-base px-8 py-3.5 rounded-xl hover:bg-cta/90 transition-colors shadow-[0_0_30px_rgba(0,237,203,0.25)]"
+            >
+              免費開始 →
+            </Link>
+            <Link
+              href="#features"
+              className="w-full sm:w-auto text-secondary border border-primary/10 hover:border-primary/20 hover:text-primary text-base font-medium px-8 py-3.5 rounded-xl transition-colors"
+            >
+              了解更多功能
+            </Link>
+          </div>
 
-            <button type="submit" disabled={loading} className="btn-primary">
-              {loading ? '生成中...' : '一鍵生成文案 ✨'}
-            </button>
-          </form>
-
-          {user && history.length > 0 && (
-            <div className="card glass history-sidebar">
-              <h3>最近生成</h3>
-              <div className="history-list">
-                {history.map((item) => (
-                  <div key={item.id} className="history-item" onClick={() => handleSelectHistory(item)}>
-                    <span className="history-date">{new Date(item.created_at).toLocaleDateString()}</span>
-                    <span className="history-type">{USE_CASES.find(u => u.value === item.type)?.label}</span>
-                    <p className="history-peek">{item.meta?.brandName}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        <div className="result-area">
-          {error && <div className="alert-error">{error}</div>}
-
-          <div className="card glass result-card">
-            <h3>生成結果</h3>
-            {result ? (
-              <div className="content-box">
-                <textarea readOnly value={result} rows={12} />
-                <button onClick={() => navigator.clipboard.writeText(result)} className="btn-secondary">
-                  複製到剪貼簿 📋
-                </button>
+        {/* ── Feature grid ── */}
+        <div id="features" className="mt-24 max-w-5xl mx-auto w-full">
+          <h2 className="text-xs font-semibold text-secondary uppercase tracking-widest mb-8">
+            核心功能
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+            {FEATURES.map(f => (
+              <div
+                key={f.title}
+                className="bg-surface border border-primary/8 rounded-2xl p-6 hover:border-cta/20 transition-colors"
+              >
+                <span className="text-3xl mb-4 block">{f.icon}</span>
+                <h3 className="text-sm font-semibold text-primary mb-2">{f.title}</h3>
+                <p className="text-xs text-secondary leading-relaxed">{f.desc}</p>
               </div>
-            ) : (
-              <p className="placeholder-text">喺左邊輸入資料，然後按「生成」啦！</p>
-            )}
+            ))}
           </div>
         </div>
-      </section>
-    </main>
+
+        {/* ── Bottom CTA strip ── */}
+        <div className="mt-20 max-w-xl mx-auto text-center">
+          <p className="text-secondary text-sm mb-4">立即免費試用，無需信用卡</p>
+          <Link
+            href="/auth"
+            className="inline-block bg-cta text-body font-bold text-sm px-8 py-3 rounded-xl hover:bg-cta/90 transition-colors"
+          >
+            開始生成內容 ✨
+          </Link>
+        </div>
+
+      </main>
+
+      {/* ── Footer ── */}
+      <footer className="border-t border-primary/8 px-6 py-6 text-center">
+        <p className="text-xs text-secondary/50">
+          © 2025 sosocontent.ai · 香港製造 🇭🇰
+        </p>
+      </footer>
+
+      {/* Layers 2 + 3 — client overlays */}
+      <LandingOverlays />
+
+    </div>
   );
 }
