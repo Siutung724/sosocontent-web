@@ -5,10 +5,10 @@
 /* ── Dark mode (default) ──────────────────────────────────────────────────── */
 :root {
   --c-body:      0 0 0;         /* #000000 */
-  --c-surface:   19 19 30;      /* #13131e */
-  --c-surface-2: 28 28 42;      /* #1c1c2a */
-  --c-primary:   238 238 248;   /* #eeeef8 */
-  --c-secondary: 120 120 160;   /* #7878a0 */
+  --c-surface:   14 22 20;      /* dark teal-tinted surface */
+  --c-surface-2: 22 34 30;      /* deeper surface */
+  --c-primary:   165 249 187;   /* #a5f9bb — mint green text on black */
+  --c-secondary: 100 180 140;   /* muted mint for secondary text */
   --c-accent:    99 102 241;    /* #6366f1 */
   --c-success:   34 197 94;     /* #22c55e */
   --c-danger:    239 68 68;     /* #ef4444 */
@@ -19,9 +19,9 @@
 html.light {
   --c-body:      250 252 240;   /* #fafcf0 */
   --c-surface:   255 255 255;   /* #ffffff */
-  --c-surface-2: 237 237 245;   /* #ededf5 */
-  --c-primary:   17 17 24;      /* #111118 */
-  --c-secondary: 92 92 128;     /* #5c5c80 */
+  --c-surface-2: 240 244 238;   /* warm off-white secondary */
+  --c-primary:   28 71 89;      /* #1c4759 — dark teal text on light */
+  --c-secondary: 60 110 130;    /* muted teal for secondary text */
   --c-accent:    99 102 241;    /* #6366f1 — same */
   --c-success:   34 197 94;     /* same */
   --c-danger:    239 68 68;     /* same */
