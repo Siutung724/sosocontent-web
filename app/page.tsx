@@ -40,7 +40,8 @@ export default async function LandingPage() {
       {/* ── Simple nav ── */}
       <header className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto w-full">
         <div className="flex items-center gap-2">
-          <span className="text-xl">💬</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="sosocontent" className="h-8 w-8 object-contain" />
           <span className="font-bold text-primary text-sm tracking-wide">sosocontent.ai</span>
         </div>
         <div className="flex items-center gap-3">
@@ -70,7 +71,7 @@ export default async function LandingPage() {
 
           {/* Headline */}
           <h1 className="text-4xl md:text-6xl font-extrabold text-primary leading-tight mb-6">
-            讓 AI 幫你寫<br />
+            讓 SOSO 幫你寫<br />
             <span className="text-cta">每一篇貼文</span>
           </h1>
 

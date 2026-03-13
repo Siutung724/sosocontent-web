@@ -22,19 +22,8 @@ export default async function Nav() {
           href="/dashboard"
           className="flex items-center gap-2 shrink-0 group"
         >
-          {/* Minimal icon: speech-bubble style */}
-          <svg
-            width="18" height="18" viewBox="0 0 18 18" fill="none"
-            className="text-accent"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect x="1" y="1" width="16" height="12" rx="3" fill="currentColor" opacity="0.15" stroke="currentColor" strokeWidth="1.5"/>
-            <path d="M4 17 L4 14 L8 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="5.5" cy="7" r="1" fill="currentColor"/>
-            <circle cx="9" cy="7" r="1" fill="currentColor"/>
-            <circle cx="12.5" cy="7" r="1" fill="currentColor"/>
-          </svg>
-          {/* TODO: replace font-sans with Gunter when available */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="sosocontent" className="h-7 w-7 object-contain" />
           <span className="text-base font-bold tracking-tight text-primary group-hover:opacity-80 transition-opacity">
             sosocontent
           </span>

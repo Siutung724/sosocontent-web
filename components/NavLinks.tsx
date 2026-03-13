@@ -25,7 +25,7 @@ export default function NavLinks({ email, displayName }: NavLinksProps) {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    router.push('/auth');
+    router.push('/');
   };
 
   const initial = (displayName?.[0] ?? email?.[0] ?? '?').toUpperCase();
