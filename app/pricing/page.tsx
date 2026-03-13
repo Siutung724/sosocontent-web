@@ -1,6 +1,7 @@
 import AppLayout from '@/components/AppLayout';
 import Link from 'next/link';
 import { StripeBuyButton } from '@/components/StripeBuyButton';
+import { createClient } from '@/lib/supabase-server';
 
 // ── Feature lists ──────────────────────────────────────────────────────────────
 
@@ -73,7 +74,11 @@ function FeatureList({ features }: { features: typeof FREE_FEATURES }) {
 
 // ── Page ───────────────────────────────────────────────────────────────────────
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id;
+
   return (
     <AppLayout>
       <div className="space-y-16">
@@ -142,7 +147,7 @@ export default function PricingPage() {
               <FeatureList features={PRO_FEATURES} />
               {/* Stripe Buy Button */}
               <div className="flex justify-center">
-                <StripeBuyButton buyButtonId="buy_btn_1TAYKzFFnwNrhEtRwJzJUnnb" />
+                <StripeBuyButton buyButtonId="buy_btn_1TAYKzFFnwNrhEtRwJzJUnnb" clientReferenceId={userId} />
               </div>
             </div>
           </div>
@@ -165,7 +170,7 @@ export default function PricingPage() {
               <FeatureList features={ENTERPRISE_FEATURES} />
               {/* Stripe Buy Button */}
               <div className="flex justify-center">
-                <StripeBuyButton buyButtonId="buy_btn_1TAYQiFFnwNrhEtR14w7OiXs" />
+                <StripeBuyButton buyButtonId="buy_btn_1TAYQiFFnwNrhEtR14w7OiXs" clientReferenceId={userId} />
               </div>
             </div>
           </div>
