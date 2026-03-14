@@ -11,6 +11,9 @@ import type {
   BrandPositioningResult,
   AdCopyResult,
   ReviewToAdResult,
+  KolScriptResult,
+  FlashSaleResult,
+  CompetitorAdResult,
 } from '@/lib/workflow-types';
 import { useToast } from '@/hooks/useToast';
 
@@ -32,11 +35,14 @@ type ExecRow = {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const WORKFLOW_ICONS: Record<string, string> = {
-  weekly_social:  '📅',
-  brand_story:    '✍️',
-  product_launch: '🚀',
-  brand_trust:    '🏷️',
-  brand_strategy: '📚',
+  weekly_social:   '📅',
+  brand_story:     '✍️',
+  product_launch:  '📣',
+  brand_trust:     '⭐',
+  brand_strategy:  '🎯',
+  kol_script:      '🤝',
+  flash_sale:      '⚡',
+  competitor_ad:   '🔍',
 };
 
 const PAGE_SIZE = 20;
@@ -45,11 +51,13 @@ type FilterKey = 'all' | string;
 
 const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'all',            label: '全部' },
-  { key: 'weekly_social',  label: '📅 每週社交媒體' },
-  { key: 'brand_story',    label: '✍️ 品牌故事' },
-  { key: 'product_launch', label: '🚀 產品上市' },
-  { key: 'brand_trust',    label: '🏷️ 品牌信任' },
-  { key: 'brand_strategy', label: '📚 品牌策略' },
+  { key: 'brand_strategy', label: '🎯 品牌定位' },
+  { key: 'weekly_social',  label: '📅 每週內容' },
+  { key: 'product_launch', label: '📣 廣告文案' },
+  { key: 'brand_trust',    label: '⭐ 客評素材' },
+  { key: 'kol_script',     label: '🤝 KOL 腳本' },
+  { key: 'flash_sale',     label: '⚡ 限時優惠' },
+  { key: 'competitor_ad',  label: '🔍 對手拆解' },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -578,6 +586,145 @@ function ReviewToAdPanel({ result }: { result: unknown }) {
   );
 }
 
+// ── KolScriptPanel ────────────────────────────────────────────────────────────
+
+function KolScriptPanel({ result }: { result: unknown }) {
+  const d = (result as KolScriptResult).kol_script;
+  if (!d) return <RawJson result={result} />;
+  return (
+    <div className="space-y-3 pt-2">
+      <CopyBlock label="📖 完整腳本全文" text={d.full_script} />
+      <CopyBlock label="開場白" text={d.opening} />
+      <CopyBlock label="使用體驗描述" text={d.experience} />
+      {d.before_after && <CopyBlock label="前後對比" text={d.before_after} />}
+      <CopyBlock label="推薦理由" text={d.brand_recommendation} />
+      {d.offer_callout && <CopyBlock label="⚡ 優惠碼植入" text={d.offer_callout} />}
+      {d.engagement_question && (
+        <p className="text-xs text-accent/80 bg-accent/5 border border-accent/10 rounded-lg px-3 py-2 flex gap-1.5">
+          <span>💬</span>{d.engagement_question}
+        </p>
+      )}
+      {d.hashtags?.length > 0 && (
+        <div className="bg-surface border border-primary/8 rounded-xl px-4 py-3">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2">Hashtag</p>
+          <div className="flex flex-wrap gap-1">
+            {d.hashtags.map(t => (
+              <span key={t} className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">{t}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── FlashSalePanel ────────────────────────────────────────────────────────────
+
+function FlashSalePanel({ result }: { result: unknown }) {
+  const d = (result as FlashSaleResult).flash_sale;
+  if (!d) return <RawJson result={result} />;
+  return (
+    <div className="space-y-3 pt-2">
+      <CopyBlock label="⚡ 完整帖文" text={d.full_post} />
+      <div className="grid grid-cols-2 gap-2">
+        <div className="bg-surface border border-primary/8 rounded-xl px-3 py-2.5">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">緊迫感開場</p>
+          <p className="text-sm text-primary">{d.urgency_hook}</p>
+        </div>
+        <div className="bg-surface border border-primary/8 rounded-xl px-3 py-2.5">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">稀缺感聲明</p>
+          <p className="text-sm text-primary">{d.scarcity_statement}</p>
+        </div>
+        <div className="bg-surface border border-primary/8 rounded-xl px-3 py-2.5">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">降低購買障礙</p>
+          <p className="text-sm text-primary">{d.trust_reducer}</p>
+        </div>
+        <div className="bg-surface border border-primary/8 rounded-xl px-3 py-2.5">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-1">行動號召</p>
+          <p className="text-sm text-primary">{d.cta}</p>
+        </div>
+      </div>
+      {d.offer_highlight && <CopyBlock label="優惠核心訊息" text={d.offer_highlight} />}
+      {d.visual_direction && (
+        <p className="text-xs text-secondary italic flex gap-1.5 px-1"><span>🖼</span>{d.visual_direction}</p>
+      )}
+      {d.hashtags?.length > 0 && (
+        <div className="bg-surface border border-primary/8 rounded-xl px-4 py-3">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2">Hashtag</p>
+          <div className="flex flex-wrap gap-1">
+            {d.hashtags.map(t => (
+              <span key={t} className="text-xs bg-accent/10 text-accent px-2 py-0.5 rounded-full">{t}</span>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── CompetitorAdPanel ─────────────────────────────────────────────────────────
+
+function CompetitorAdPanel({ result }: { result: unknown }) {
+  const d = (result as CompetitorAdResult).competitor_analysis;
+  if (!d) return <RawJson result={result} />;
+  return (
+    <div className="space-y-3 pt-2">
+      <CopyBlock label="🎯 訴求核心" text={d.core_appeal} />
+      {d.emotion_triggers?.length > 0 && (
+        <div className="bg-surface border border-primary/8 rounded-xl px-4 py-3 space-y-1.5">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide">情緒觸發器</p>
+          {d.emotion_triggers.map((et, i) => (
+            <div key={i} className="flex gap-2 text-sm">
+              <span className="text-amber-400 font-semibold shrink-0">{et.trigger}</span>
+              <span className="text-secondary">→ {et.example}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {d.social_proof_methods?.length > 0 && (
+        <div className="bg-surface border border-primary/8 rounded-xl px-4 py-3">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2">社會認證手法</p>
+          <ul className="space-y-1">
+            {d.social_proof_methods.map((m, i) => (
+              <li key={i} className="text-sm text-primary flex gap-2"><span className="text-accent">✓</span>{m}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <CopyBlock label="CTA 分析" text={d.cta_analysis} />
+      <CopyBlock label="🇭🇰 本地化評估" text={d.localization_score} />
+      {d.weaknesses?.length > 0 && (
+        <div className="bg-surface border border-primary/8 rounded-xl px-4 py-3 space-y-2">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide">弱點 → 我的機會</p>
+          {d.weaknesses.map((w, i) => (
+            <div key={i} className="grid grid-cols-2 gap-2 text-xs">
+              <div className="bg-danger/5 border border-danger/10 rounded-lg px-3 py-2">
+                <span className="text-danger/70 font-medium">弱點：</span>
+                <span className="text-primary">{w.weakness}</span>
+              </div>
+              <div className="bg-success/5 border border-success/10 rounded-lg px-3 py-2">
+                <span className="text-success font-medium">機會：</span>
+                <span className="text-primary">{w.opportunity}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      {d.borrowable_tactics?.length > 0 && (
+        <div className="bg-surface border border-primary/8 rounded-xl px-4 py-3 space-y-2">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-wide">💡 可借鑑手法</p>
+          {d.borrowable_tactics.map((bt, i) => (
+            <div key={i} className="border-l-2 border-accent/40 pl-3">
+              <p className="text-sm font-semibold text-primary">{bt.tactic}</p>
+              <p className="text-xs text-secondary mt-0.5">→ {bt.how_to_apply}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Raw JSON fallback ─────────────────────────────────────────────────────────
 
 function RawJson({ result }: { result: unknown }) {
@@ -627,6 +774,9 @@ function ResultPanel({ workflowKey, result }: { workflowKey: string | null; resu
     if (r?.brand_positioning) return <BrandPositioningPanel result={result} />;
     return <BrandStrategyPanel result={result} />;
   }
+  if (workflowKey === 'kol_script')    return <KolScriptPanel result={result} />;
+  if (workflowKey === 'flash_sale')    return <FlashSalePanel result={result} />;
+  if (workflowKey === 'competitor_ad') return <CompetitorAdPanel result={result} />;
   return <RawJson result={result} />;
 }
 

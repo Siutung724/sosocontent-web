@@ -235,6 +235,50 @@ export interface ReviewToAdResult {
   };
 }
 
+// ── kol_script result shape ───────────────────────────────────────────────────
+
+export interface KolScriptResult {
+  kol_script: {
+    opening: string;
+    experience: string;
+    before_after: string;
+    brand_recommendation: string;
+    offer_callout: string;
+    engagement_question: string;
+    full_script: string;
+    hashtags: string[];
+  };
+}
+
+// ── flash_sale result shape ───────────────────────────────────────────────────
+
+export interface FlashSaleResult {
+  flash_sale: {
+    urgency_hook: string;
+    offer_highlight: string;
+    scarcity_statement: string;
+    trust_reducer: string;
+    cta: string;
+    full_post: string;
+    hashtags: string[];
+    visual_direction: string;
+  };
+}
+
+// ── competitor_ad result shape ────────────────────────────────────────────────
+
+export interface CompetitorAdResult {
+  competitor_analysis: {
+    core_appeal: string;
+    emotion_triggers: { trigger: string; example: string }[];
+    social_proof_methods: string[];
+    cta_analysis: string;
+    localization_score: string;
+    weaknesses: { weakness: string; opportunity: string }[];
+    borrowable_tactics: { tactic: string; how_to_apply: string }[];
+  };
+}
+
 export type WorkflowResult =
   | WeeklySocialResult
   | BrandStoryResult
@@ -243,4 +287,7 @@ export type WorkflowResult =
   | BrandStrategyResult
   | BrandPositioningResult
   | AdCopyResult
-  | ReviewToAdResult;
+  | ReviewToAdResult
+  | KolScriptResult
+  | FlashSaleResult
+  | CompetitorAdResult;
