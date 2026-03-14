@@ -20,6 +20,7 @@ const QUICK_TASKS = [
     emoji: '📅',
     href: '/workflows/weekly_social',
     accent: 'from-accent/10 to-accent/5',
+    creditCost: 2,
   },
   {
     title: '品牌定位一鍵生成',
@@ -27,6 +28,7 @@ const QUICK_TASKS = [
     emoji: '🎯',
     href: '/workflows/brand_strategy',
     accent: 'from-emerald-500/10 to-emerald-500/5',
+    creditCost: 2,
   },
   {
     title: '高轉化廣告文案',
@@ -34,6 +36,7 @@ const QUICK_TASKS = [
     emoji: '📣',
     href: '/workflows/product_launch',
     accent: 'from-purple-500/10 to-purple-500/5',
+    creditCost: 1,
   },
   {
     title: '客評廣告素材轉化',
@@ -41,6 +44,7 @@ const QUICK_TASKS = [
     emoji: '⭐',
     href: '/workflows/brand_trust',
     accent: 'from-yellow-500/10 to-yellow-500/5',
+    creditCost: 1,
   },
   {
     title: 'KOL 合作腳本',
@@ -48,6 +52,7 @@ const QUICK_TASKS = [
     emoji: '🤝',
     href: '/workflows/kol_script',
     accent: 'from-rose-500/10 to-rose-500/5',
+    creditCost: 1,
   },
   {
     title: '限時優惠爆款帖',
@@ -55,6 +60,7 @@ const QUICK_TASKS = [
     emoji: '⚡',
     href: '/workflows/flash_sale',
     accent: 'from-orange-500/10 to-orange-500/5',
+    creditCost: 1,
   },
   {
     title: '競爭對手廣告拆解',
@@ -62,6 +68,7 @@ const QUICK_TASKS = [
     emoji: '🔍',
     href: '/workflows/competitor_ad',
     accent: 'from-sky-500/10 to-sky-500/5',
+    creditCost: 2,
   },
   {
     title: '品牌聲線設定',
@@ -69,6 +76,7 @@ const QUICK_TASKS = [
     emoji: '🎙️',
     href: '/settings/voice',
     accent: 'from-pink-500/10 to-pink-500/5',
+    creditCost: null,
   },
 ];
 
@@ -130,12 +138,18 @@ export default async function WorkflowsPage() {
               >
                 <span className="text-3xl shrink-0 mt-0.5">{task.emoji}</span>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-semibold text-primary group-hover:text-accent transition-colors mb-1">
-                    {task.title}
-                  </h3>
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <h3 className="text-sm font-semibold text-primary group-hover:text-accent transition-colors">
+                      {task.title}
+                    </h3>
+                    {task.creditCost !== null && (
+                      <span className="shrink-0 text-xs font-medium text-secondary/60 bg-primary/5 border border-primary/8 px-2 py-0.5 rounded-full whitespace-nowrap">
+                        {task.creditCost} 積分
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-secondary leading-relaxed">{task.desc}</p>
                 </div>
-                <span className="text-secondary/40 group-hover:text-accent/60 transition-colors text-lg shrink-0 mt-0.5">→</span>
               </Link>
             ))}
           </div>
@@ -212,8 +226,15 @@ export default async function WorkflowsPage() {
                 className="bg-surface border border-primary/8 hover:border-primary/10 rounded-2xl shadow-card flex flex-col transition-colors"
               >
                 <div className="p-6 flex-1">
-                  <div className="text-4xl mb-4">
-                    {WORKFLOW_ICONS[wf.key] ?? '✨'}
+                  <div className="flex items-start justify-between mb-4">
+                    <span className="text-4xl">
+                      {WORKFLOW_ICONS[wf.key] ?? '✨'}
+                    </span>
+                    {wf.credit_cost != null && (
+                      <span className="text-xs font-medium text-secondary/60 bg-primary/5 border border-primary/8 px-2 py-0.5 rounded-full">
+                        {wf.credit_cost} 積分
+                      </span>
+                    )}
                   </div>
                   <h2 className="text-base font-semibold text-primary mb-2 leading-snug">
                     {wf.name}
