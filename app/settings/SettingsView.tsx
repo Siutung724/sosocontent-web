@@ -47,18 +47,18 @@ export default function SettingsView({ email, displayName, createdAt }: Settings
           <div className="flex items-center justify-between gap-3 mb-4">
             <div>
               <h3 className="text-sm font-semibold text-primary">免費版</h3>
-              <p className="text-xs text-secondary mt-0.5">每月 10 次生成額度</p>
+              <p className="text-xs text-secondary mt-0.5">120 積分免費試用（終身一次性）</p>
             </div>
             <span className="text-xs bg-accent/10 text-accent px-2.5 py-0.5 rounded-full font-medium shrink-0">
               使用中
             </span>
           </div>
-          <button
-            onClick={() => showToast('success', '訂閱升級功能即將推出，敬請期待！')}
-            className="text-sm border border-accent/30 text-accent hover:bg-accent/10 px-4 py-2 rounded-xl transition-colors font-medium"
+          <Link
+            href="/pricing"
+            className="inline-block text-sm border border-accent/30 text-accent hover:bg-accent/10 px-4 py-2 rounded-xl transition-colors font-medium"
           >
             升級至專業版
-          </button>
+          </Link>
         </div>
       </section>
 
