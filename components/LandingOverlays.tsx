@@ -19,7 +19,7 @@ function UpdateBanner() {
             📢 最新消息
           </span>
           <h3 className="text-sm font-semibold text-primary leading-snug">
-            7日社交媒體計劃生成器正式上線
+            7 大 AI 工作流程全面上線 🎉
           </h3>
         </div>
         <button
@@ -36,7 +36,7 @@ function UpdateBanner() {
       {/* Body */}
       <div className="px-5 pb-4">
         <p className="text-xs text-secondary leading-relaxed mb-3">
-          輸入品牌資料，AI 自動為你生成 Instagram、Facebook 及 LinkedIn 一週貼文計劃，每篇附主題、正文、Hashtag 及配圖建議。
+          包括：七日內容策略、KOL 腳本、限時優惠帖、競爭對手廣告拆解等，免費帳戶送 120 積分即刻體驗。
         </p>
         <Link
           href="/auth"
@@ -52,18 +52,28 @@ function UpdateBanner() {
 // ── Promo Modal (Layer 3) ──────────────────────────────────────────────────
 // Full-screen backdrop + centered modal, dismissible
 
-// 優惠截止日期：2026 年 4 月 30 日 23:59:59
-const OFFER_END = new Date('2026-04-30T23:59:59+08:00');
+// 優惠倒數：首次訪問起 3 天，存在 localStorage
+const OFFER_DURATION_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+const LS_KEY = 'soso_offer_end';
+
+function getOfferEnd(): number {
+  if (typeof window === 'undefined') return 0;
+  const stored = localStorage.getItem(LS_KEY);
+  if (stored) {
+    const ts = parseInt(stored, 10);
+    if (!isNaN(ts)) return ts;
+  }
+  const end = Date.now() + OFFER_DURATION_MS;
+  localStorage.setItem(LS_KEY, String(end));
+  return end;
+}
 
 function useCountdown() {
-  // null = not yet mounted (avoid server/client mismatch)
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
   useEffect(() => {
-    const calc = () => {
-      const diff = OFFER_END.getTime() - Date.now();
-      return diff > 0 ? diff : 0;
-    };
+    const offerEnd = getOfferEnd();
+    const calc = () => Math.max(0, offerEnd - Date.now());
     setTimeLeft(calc());
     const id = setInterval(() => setTimeLeft(calc()), 1000);
     return () => clearInterval(id);
@@ -134,14 +144,18 @@ function PromoModal() {
         <div className="px-6 pb-6">
           <ul className="space-y-2 mb-5 mt-3">
             {[
-              '無限次 AI 內容生成',
-              '7日、30日社交媒體計劃',
-              '品牌聲音分析及優化建議',
-              '多平台一鍵發佈（即將推出）',
+              { text: '7 大 AI 工作流程，一鍵生成廣東話文案', soon: false },
+              { text: '品牌定位 + 競爭對手廣告拆解', soon: false },
+              { text: 'KOL 腳本 + 限時優惠爆款帖', soon: false },
+              { text: '粵語 TTS 語音播報', soon: false },
+              { text: '數字人視頻生成', soon: true },
             ].map(item => (
-              <li key={item} className="flex items-center gap-2 text-sm text-secondary">
+              <li key={item.text} className="flex items-center gap-2 text-sm text-secondary">
                 <span className="text-cta shrink-0">✓</span>
-                {item}
+                <span>{item.text}</span>
+                {item.soon && (
+                  <span className="text-[10px] text-secondary/50 border border-primary/10 px-1.5 py-0.5 rounded-full shrink-0">即將推出</span>
+                )}
               </li>
             ))}
           </ul>
@@ -164,8 +178,8 @@ function PromoModal() {
             <p className="text-xs text-danger/80 mb-4">優惠已結束</p>
           ) : null}
 
-          <p className="text-xs text-secondary/60 mb-4">
-            無需信用卡，隨時取消。
+          <p className="text-xs text-secondary mb-4 font-medium">
+            🔓 無需信用卡，隨時取消
           </p>
 
           <Link
