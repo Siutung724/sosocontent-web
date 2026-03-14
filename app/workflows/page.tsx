@@ -20,7 +20,7 @@ const QUICK_TASKS = [
     emoji: '📅',
     href: '/workflows/weekly_social',
     accent: 'from-accent/10 to-accent/5',
-    creditCost: 2,
+    creditCost: 20,
   },
   {
     title: '品牌定位一鍵生成',
@@ -28,7 +28,7 @@ const QUICK_TASKS = [
     emoji: '🎯',
     href: '/workflows/brand_strategy',
     accent: 'from-emerald-500/10 to-emerald-500/5',
-    creditCost: 2,
+    creditCost: 20,
   },
   {
     title: '高轉化廣告文案',
@@ -36,7 +36,7 @@ const QUICK_TASKS = [
     emoji: '📣',
     href: '/workflows/product_launch',
     accent: 'from-purple-500/10 to-purple-500/5',
-    creditCost: 1,
+    creditCost: 10,
   },
   {
     title: '客評廣告素材轉化',
@@ -44,7 +44,7 @@ const QUICK_TASKS = [
     emoji: '⭐',
     href: '/workflows/brand_trust',
     accent: 'from-yellow-500/10 to-yellow-500/5',
-    creditCost: 1,
+    creditCost: 10,
   },
   {
     title: 'KOL 合作腳本',
@@ -52,7 +52,7 @@ const QUICK_TASKS = [
     emoji: '🤝',
     href: '/workflows/kol_script',
     accent: 'from-rose-500/10 to-rose-500/5',
-    creditCost: 1,
+    creditCost: 10,
   },
   {
     title: '限時優惠爆款帖',
@@ -60,7 +60,7 @@ const QUICK_TASKS = [
     emoji: '⚡',
     href: '/workflows/flash_sale',
     accent: 'from-orange-500/10 to-orange-500/5',
-    creditCost: 1,
+    creditCost: 10,
   },
   {
     title: '競爭對手廣告拆解',
@@ -68,7 +68,7 @@ const QUICK_TASKS = [
     emoji: '🔍',
     href: '/workflows/competitor_ad',
     accent: 'from-sky-500/10 to-sky-500/5',
-    creditCost: 2,
+    creditCost: 20,
   },
   {
     title: '品牌聲線設定',

@@ -12,8 +12,8 @@ import type {
 
 /** Monthly credit allowance per plan. -1 = unlimited. */
 const PLAN_MONTHLY_CREDITS: Record<string, number> = {
-  free:       10,
-  pro:        100,
+  free:       100,
+  pro:        1000,
   enterprise: -1,
 };
 
