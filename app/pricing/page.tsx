@@ -169,7 +169,7 @@ export default async function PricingPage() {
                   </div>
                 </div>
               </div>
-              <CreditBadge amount="1,000 積分" period="每個帳單周期 · 到期清零" color="bg-accent/15 text-accent" />
+              <CreditBadge amount="1,000 積分" period="每月發放新配額 · 沒有累積" color="bg-accent/15 text-accent" />
               <p className="text-xs text-secondary/70 mb-4 -mt-2">
                 每月可完成約 50 次複雜任務或 100 次快速生成<br />
                 <span className="text-secondary/50">~50 complex or ~100 simple workflow runs/month</span>
@@ -196,7 +196,7 @@ export default async function PricingPage() {
                   </div>
                 </div>
               </div>
-              <CreditBadge amount="5,000 積分" period="每個帳單周期 · 到期清零" color="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400" />
+              <CreditBadge amount="5,000 積分" period="每月發放新配額 · 沒有累積" color="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400" />
               <p className="text-xs text-secondary/70 mb-4 -mt-2">
                 高頻創作者首選，支援多品牌大量生產<br />
                 <span className="text-secondary/50">For power users & agencies managing multiple brands</span>
