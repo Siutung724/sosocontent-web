@@ -6,53 +6,64 @@ import { createClient } from '@/lib/supabase-server';
 // ── Feature lists ──────────────────────────────────────────────────────────────
 
 const FREE_FEATURES = [
-  { zh: '每月 1 次 AI 內容生成', en: '1 AI content generation / month', included: true },
-  { zh: '可用所有 5 個工作流程', en: 'Access all 5 workflows', included: true },
+  { zh: '全部 7 個 AI 工作流程', en: 'All 7 AI workflows', included: true },
   { zh: '1 個品牌資料', en: '1 brand profile', included: true },
-  { zh: '內容庫（查閱記錄）', en: 'Content library access', included: true },
-  { zh: '品牌聲線 TTS 播放', en: 'Brand voice TTS playback', included: false },
-  { zh: '多個品牌管理', en: 'Multiple brand profiles', included: false },
+  { zh: '內容庫查閱記錄', en: 'Content library access', included: true },
+  { zh: '推薦好友各得 +500 積分', en: 'Refer friends for +500 credits each', included: true },
+  { zh: '品牌聲線 TTS 朗讀', en: 'Brand voice TTS playback', included: false },
+  { zh: '多品牌管理', en: 'Multiple brand profiles', included: false },
   { zh: '優先客戶支援', en: 'Priority support', included: false },
 ];
 
 const PRO_FEATURES = [
-  { zh: '無限次 AI 內容生成', en: 'Unlimited AI content generation', included: true },
-  { zh: '可用所有 5 個工作流程', en: 'Access all 5 workflows', included: true },
+  { zh: '全部 7 個 AI 工作流程', en: 'All 7 AI workflows', included: true },
   { zh: '3 個品牌資料', en: 'Up to 3 brand profiles', included: true },
-  { zh: '內容庫（完整記錄）', en: 'Full content library', included: true },
-  { zh: '品牌聲線 TTS（每月 1 次）', en: 'Brand voice TTS (1× / month)', included: true },
-  { zh: '多個品牌管理', en: 'Multiple brand profiles', included: false },
+  { zh: '內容庫完整記錄', en: 'Full content library', included: true },
+  { zh: '品牌聲線 TTS 朗讀', en: 'Brand voice TTS playback', included: true },
+  { zh: '推薦好友各得 +500 積分', en: 'Refer friends for +500 credits each', included: true },
+  { zh: '多品牌管理', en: 'Multiple brand profiles', included: false },
   { zh: '優先客戶支援', en: 'Priority support', included: false },
 ];
 
 const ENTERPRISE_FEATURES = [
-  { zh: '無限次 AI 內容生成', en: 'Unlimited AI content generation', included: true },
-  { zh: '可用所有 5 個工作流程', en: 'Access all 5 workflows', included: true },
+  { zh: '全部 7 個 AI 工作流程', en: 'All 7 AI workflows', included: true },
   { zh: '無限品牌資料', en: 'Unlimited brand profiles', included: true },
-  { zh: '內容庫（完整記錄）', en: 'Full content library', included: true },
-  { zh: '品牌聲線 TTS（無限次）', en: 'Brand voice TTS (unlimited)', included: true },
-  { zh: '多個品牌管理', en: 'Multiple brand profiles', included: true },
+  { zh: '內容庫完整記錄', en: 'Full content library', included: true },
+  { zh: '品牌聲線 TTS 朗讀（無限次）', en: 'Brand voice TTS (unlimited)', included: true },
+  { zh: '多品牌管理', en: 'Multiple brand profiles', included: true },
+  { zh: '推薦好友各得 +500 積分', en: 'Refer friends for +500 credits each', included: true },
   { zh: '優先客戶支援', en: 'Priority support', included: true },
+];
+
+// ── Credit examples ─────────────────────────────────────────────────────────────
+
+const CREDIT_EXAMPLES = [
+  { credits: 10, label: '廣告文案 / KOL 腳本 / 限時優惠帖', en: 'Ad copy / KOL script / Flash sale post' },
+  { credits: 20, label: '七日社媒計劃 / 品牌定位 / 競爭分析', en: 'Weekly social plan / Brand strategy / Competitor analysis' },
 ];
 
 // ── FAQ ────────────────────────────────────────────────────────────────────────
 
 const FAQS = [
   {
-    q: '如何計算 AI 生成費用？\nHow are AI generation costs calculated?',
-    a: '我們使用按用量計費的 AI 模型（包括 GPT-4o mini 及 MiniMax TTS），成本已包含在月費內，你無需另外付費。\nWe use pay-per-use AI models (including GPT-4o mini and MiniMax TTS). All costs are included in your monthly plan — no hidden fees.',
+    q: '積分是什麼？怎樣計算？\nWhat are credits and how are they calculated?',
+    a: '每個 AI 工作流程消耗不同積分：簡單工作流程（廣告文案、KOL 腳本、限時優惠、客評轉化）消耗 10 積分；複雜工作流程（七日社媒計劃、品牌定位、競爭對手分析）消耗 20 積分。\nEach workflow costs credits: simple workflows (ad copy, KOL script, flash sale, trust) = 10 credits; complex workflows (weekly social, brand strategy, competitor analysis) = 20 credits.',
+  },
+  {
+    q: '免費版的 120 積分會過期嗎？\nDo Free plan credits expire?',
+    a: '不會。免費版 120 積分是一次性永久配額，無使用期限，足夠試用全部 7 個工作流程還有餘額。\nNo. Free plan credits are a one-time lifetime allotment — no expiry. Enough to try all 7 workflows with credits to spare.',
+  },
+  {
+    q: '付費版積分會累積嗎？\nDo paid plan credits roll over?',
+    a: '不會累積，每個帳單周期重新發放。Pro 每月 1,000 積分，Enterprise 每月 5,000 積分。推薦好友獲得的獎勵積分會疊加在基本配額之上。\nPaid credits reset each billing period. Pro = 1,000/month, Enterprise = 5,000/month. Referral bonus credits stack on top of your base allowance.',
   },
   {
     q: '可以隨時取消訂閱嗎？\nCan I cancel anytime?',
     a: '可以，所有方案均可隨時取消，取消後仍可使用至月費期結束。\nYes. Cancel anytime — you\'ll retain access until the end of your billing period.',
   },
-  {
-    q: '免費版有什麼限制？\nWhat are the Free plan limitations?',
-    a: '免費版每月只可生成 1 次 AI 內容，不包含 TTS 語音功能。適合試用了解產品功能。\nThe Free plan allows 1 AI generation per month and does not include TTS voice. It\'s ideal for trying out the product.',
-  },
 ];
 
-// ── Feature row ────────────────────────────────────────────────────────────────
+// ── Components ─────────────────────────────────────────────────────────────────
 
 function FeatureList({ features }: { features: typeof FREE_FEATURES }) {
   return (
@@ -69,6 +80,15 @@ function FeatureList({ features }: { features: typeof FREE_FEATURES }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function CreditBadge({ amount, period, color }: { amount: string; period: string; color: string }) {
+  return (
+    <div className={`inline-flex flex-col items-center rounded-xl px-4 py-2 mb-5 ${color}`}>
+      <span className="text-2xl font-extrabold leading-none">{amount}</span>
+      <span className="text-xs mt-0.5 opacity-80">{period}</span>
+    </div>
   );
 }
 
@@ -89,12 +109,12 @@ export default async function PricingPage() {
             定價方案  /  Pricing
           </p>
           <h1 className="text-3xl md:text-4xl font-bold text-primary leading-snug mb-3">
-            簡單透明的定價<br className="hidden sm:block" />
-            <span className="text-accent">Simple, Transparent Pricing</span>
+            按積分使用，靈活不浪費<br className="hidden sm:block" />
+            <span className="text-accent">Pay by credits. Use what you need.</span>
           </h1>
           <p className="text-secondary text-sm max-w-md mx-auto leading-relaxed">
-            按需選擇，無隱藏收費。AI 生成成本已全數包含。<br />
-            Choose your plan. No hidden fees. All AI costs included.
+            每個方案均包含固定積分配額，用於驅動 AI 生成、TTS 語音等功能。<br />
+            All plans include a credit allowance for AI generation, TTS voice & more.
           </p>
         </div>
 
@@ -104,19 +124,24 @@ export default async function PricingPage() {
           {/* ── Free ── */}
           <div className="bg-surface border border-primary/8 rounded-2xl flex flex-col">
             <div className="p-6 flex-1 flex flex-col">
-              <div className="mb-5">
+              <div className="mb-1">
                 <h2 className="text-base font-semibold text-primary">
                   免費體驗
                   <span className="text-secondary/50 font-normal ml-1.5 text-sm">/ Free</span>
                 </h2>
-                <div className="mt-3 flex items-end gap-1.5">
+                <div className="mt-2 flex items-end gap-1.5">
                   <span className="text-3xl font-bold text-primary">$0</span>
                   <span className="pb-1 text-xs text-secondary">永久免費 / Free forever</span>
                 </div>
               </div>
+              <CreditBadge amount="120 積分" period="一次性永久配額 · 無期限" color="bg-primary/10 text-primary" />
+              <p className="text-xs text-secondary/70 mb-4 -mt-2">
+                足夠試用全部 7 個工作流程，還有 20 積分餘額<br />
+                <span className="text-secondary/50">Enough to try all 7 workflows + 20 credits to spare</span>
+              </p>
               <FeatureList features={FREE_FEATURES} />
               <Link
-                href="/login"
+                href="/auth"
                 className="block w-full text-center py-2.5 px-4 rounded-xl text-sm border border-primary/20 hover:border-accent/40 text-secondary hover:text-primary transition-colors"
               >
                 立即開始  /  Get Started
@@ -132,20 +157,24 @@ export default async function PricingPage() {
               </span>
             </div>
             <div className="p-6 flex-1 flex flex-col">
-              <div className="mb-5">
+              <div className="mb-1">
                 <h2 className="text-base font-semibold text-primary">
                   專業版
                   <span className="text-secondary/50 font-normal ml-1.5 text-sm">/ Pro</span>
                 </h2>
-                <div className="mt-3 flex items-end gap-1.5">
+                <div className="mt-2 flex items-end gap-1.5">
                   <span className="text-3xl font-bold text-accent">US$20</span>
                   <div className="pb-1 text-xs text-secondary leading-tight">
                     <p>每月 / per month</p>
                   </div>
                 </div>
               </div>
+              <CreditBadge amount="1,000 積分" period="每個帳單周期 · 到期清零" color="bg-accent/15 text-accent" />
+              <p className="text-xs text-secondary/70 mb-4 -mt-2">
+                每月可完成約 50 次複雜任務或 100 次快速生成<br />
+                <span className="text-secondary/50">~50 complex or ~100 simple workflow runs/month</span>
+              </p>
               <FeatureList features={PRO_FEATURES} />
-              {/* Stripe Buy Button */}
               <div className="flex justify-center">
                 <StripeBuyButton buyButtonId="buy_btn_1TAYKzFFnwNrhEtRwJzJUnnb" clientReferenceId={userId} />
               </div>
@@ -153,22 +182,26 @@ export default async function PricingPage() {
           </div>
 
           {/* ── Enterprise ── */}
-          <div className="bg-surface border border-primary/8 rounded-2xl flex flex-col">
+          <div className="bg-surface border border-yellow-500/20 rounded-2xl flex flex-col">
             <div className="p-6 flex-1 flex flex-col">
-              <div className="mb-5">
+              <div className="mb-1">
                 <h2 className="text-base font-semibold text-primary">
                   企業版
                   <span className="text-secondary/50 font-normal ml-1.5 text-sm">/ Enterprise</span>
                 </h2>
-                <div className="mt-3 flex items-end gap-1.5">
-                  <span className="text-3xl font-bold text-primary">US$50</span>
+                <div className="mt-2 flex items-end gap-1.5">
+                  <span className="text-3xl font-bold text-yellow-500 dark:text-yellow-400">US$50</span>
                   <div className="pb-1 text-xs text-secondary leading-tight">
                     <p>每月 / per month</p>
                   </div>
                 </div>
               </div>
+              <CreditBadge amount="5,000 積分" period="每個帳單周期 · 到期清零" color="bg-yellow-500/10 text-yellow-600 dark:text-yellow-400" />
+              <p className="text-xs text-secondary/70 mb-4 -mt-2">
+                高頻創作者首選，支援多品牌大量生產<br />
+                <span className="text-secondary/50">For power users & agencies managing multiple brands</span>
+              </p>
               <FeatureList features={ENTERPRISE_FEATURES} />
-              {/* Stripe Buy Button */}
               <div className="flex justify-center">
                 <StripeBuyButton buyButtonId="buy_btn_1TAYQiFFnwNrhEtR14w7OiXs" clientReferenceId={userId} />
               </div>
@@ -177,18 +210,27 @@ export default async function PricingPage() {
 
         </div>
 
-        {/* Cost transparency */}
-        <div className="bg-surface border border-primary/8 rounded-2xl p-5 max-w-2xl mx-auto text-center">
-          <p className="text-xs font-semibold text-secondary uppercase tracking-widest mb-2">
-            成本透明度  /  Cost Transparency
+        {/* Credit value table */}
+        <div className="bg-surface border border-primary/8 rounded-2xl p-5 max-w-2xl mx-auto">
+          <p className="text-xs font-semibold text-secondary uppercase tracking-widest mb-4 text-center">
+            積分消耗參考  /  Credit Cost Reference
           </p>
-          <p className="text-sm text-secondary leading-relaxed">
-            每次 AI 文案生成成本約 <span className="text-primary font-medium">US$0.002</span>，
-            TTS 語音生成約 <span className="text-primary font-medium">US$0.02–0.05</span> 每次。
-            月費已涵蓋所有 AI 使用成本，按方案限額扣除。
-          </p>
-          <p className="text-xs text-secondary/60 mt-1.5">
-            Each AI generation costs ~US$0.002; TTS ~US$0.02–0.05 per session. All included in your plan.
+          <div className="space-y-3">
+            {CREDIT_EXAMPLES.map((ex, i) => (
+              <div key={i} className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm text-primary">{ex.label}</p>
+                  <p className="text-xs text-secondary/60">{ex.en}</p>
+                </div>
+                <span className="shrink-0 bg-accent/10 text-accent font-bold text-sm px-3 py-1 rounded-full">
+                  {ex.credits} 積分
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-secondary/50 mt-4 text-center">
+            推薦好友成功註冊，雙方各獲 +500 積分獎勵 🎁<br />
+            Refer a friend and both of you get +500 bonus credits
           </p>
         </div>
 
