@@ -14,6 +14,15 @@ export default async function SettingsPage() {
     user.email?.split('@')[0] ??
     '用家';
 
+  const plan = (user.user_metadata?.plan as string | undefined) ?? 'free';
+
+  const { data: planRow } = await supabase
+    .from('user_plans')
+    .select('bonus_credits')
+    .eq('user_id', user.id)
+    .single();
+  const bonusCredits = planRow?.bonus_credits ?? 0;
+
   return (
     <AppLayout>
       <div className="space-y-8">
@@ -22,6 +31,8 @@ export default async function SettingsPage() {
           email={user.email ?? ''}
           displayName={displayName}
           createdAt={user.created_at}
+          plan={plan}
+          bonusCredits={bonusCredits}
         />
       </div>
     </AppLayout>

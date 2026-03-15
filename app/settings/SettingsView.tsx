@@ -7,6 +7,8 @@ interface SettingsViewProps {
   email: string;
   displayName: string;
   createdAt: string;
+  plan: string;
+  bonusCredits: number;
 }
 
 function formatDate(iso: string) {
@@ -15,8 +17,30 @@ function formatDate(iso: string) {
   });
 }
 
-export default function SettingsView({ email, displayName, createdAt }: SettingsViewProps) {
+const PLAN_INFO: Record<string, { label: string; labelEn: string; credits: string; creditsEn: string; color: string }> = {
+  free: {
+    label: '免費版', labelEn: 'Free',
+    credits: '120 積分（終身一次性配額）',
+    creditsEn: '120 credits · one-time lifetime allotment',
+    color: 'bg-accent/10 text-accent',
+  },
+  pro: {
+    label: '專業版', labelEn: 'Pro',
+    credits: '1,000 積分 / 每月發放',
+    creditsEn: '1,000 credits · renews monthly',
+    color: 'bg-accent/10 text-accent',
+  },
+  enterprise: {
+    label: '企業版', labelEn: 'Enterprise',
+    credits: '5,000 積分 / 每月發放',
+    creditsEn: '5,000 credits · renews monthly',
+    color: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
+  },
+};
+
+export default function SettingsView({ email, displayName, createdAt, plan, bonusCredits }: SettingsViewProps) {
   const { showToast } = useToast();
+  const planInfo = PLAN_INFO[plan] ?? PLAN_INFO.free;
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -44,21 +68,32 @@ export default function SettingsView({ email, displayName, createdAt }: Settings
       <section>
         <h2 className="text-xs font-semibold text-secondary uppercase tracking-widest mb-4">訂閱計劃</h2>
         <div className="bg-surface border border-primary/8 rounded-2xl p-5">
-          <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex items-center justify-between gap-3 mb-3">
             <div>
-              <h3 className="text-sm font-semibold text-primary">免費版</h3>
-              <p className="text-xs text-secondary mt-0.5">120 積分免費試用（終身一次性）</p>
+              <h3 className="text-sm font-semibold text-primary">
+                {planInfo.label}
+                <span className="text-secondary/50 font-normal ml-1.5 text-xs">/ {planInfo.labelEn}</span>
+              </h3>
+              <p className="text-xs text-secondary mt-0.5">{planInfo.credits}</p>
+              <p className="text-xs text-secondary/50">{planInfo.creditsEn}</p>
             </div>
-            <span className="text-xs bg-accent/10 text-accent px-2.5 py-0.5 rounded-full font-medium shrink-0">
+            <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium shrink-0 ${planInfo.color}`}>
               使用中
             </span>
           </div>
-          <Link
-            href="/pricing"
-            className="inline-block text-sm border border-accent/30 text-accent hover:bg-accent/10 px-4 py-2 rounded-xl transition-colors font-medium"
-          >
-            升級至專業版
-          </Link>
+          {bonusCredits > 0 && (
+            <p className="text-xs text-success mb-3">
+              + {bonusCredits} 推薦獎勵積分 · {bonusCredits} referral bonus credits
+            </p>
+          )}
+          {plan === 'free' && (
+            <Link
+              href="/pricing"
+              className="inline-block text-sm border border-accent/30 text-accent hover:bg-accent/10 px-4 py-2 rounded-xl transition-colors font-medium"
+            >
+              升級至專業版 →
+            </Link>
+          )}
         </div>
       </section>
 
