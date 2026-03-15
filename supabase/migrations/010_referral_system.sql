@@ -1,6 +1,27 @@
 -- Migration 010: Referral System
 -- Run in Supabase SQL Editor
 
+-- 0. Ensure user_plans table exists (from migration 004)
+CREATE TABLE IF NOT EXISTS user_plans (
+  user_id              UUID        PRIMARY KEY,
+  plan                 TEXT        NOT NULL DEFAULT 'free',
+  stripe_customer_id   TEXT,
+  current_period_end   TIMESTAMPTZ,
+  created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE user_plans ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'user_plans' AND policyname = 'Users can view own plan'
+  ) THEN
+    EXECUTE 'CREATE POLICY "Users can view own plan" ON user_plans FOR SELECT USING (auth.uid() = user_id)';
+  END IF;
+END $$;
+
 -- 1. Add bonus_credits + referral_code to user_plans
 ALTER TABLE user_plans
   ADD COLUMN IF NOT EXISTS bonus_credits  INT NOT NULL DEFAULT 0,
@@ -12,8 +33,14 @@ SET referral_code = UPPER(SUBSTRING(user_id::text, 1, 8))
 WHERE referral_code IS NULL;
 
 -- Make referral_code unique (needed for lookup)
-ALTER TABLE user_plans
-  ADD CONSTRAINT IF NOT EXISTS user_plans_referral_code_key UNIQUE (referral_code);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'user_plans_referral_code_key'
+  ) THEN
+    ALTER TABLE user_plans ADD CONSTRAINT user_plans_referral_code_key UNIQUE (referral_code);
+  END IF;
+END $$;
 
 -- 2. Referrals tracking table
 CREATE TABLE IF NOT EXISTS referrals (
