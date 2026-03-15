@@ -4,6 +4,17 @@ import { NextResponse, type NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
+  // Capture ?ref= referral code into a cookie (expires in 7 days)
+  const refCode = request.nextUrl.searchParams.get('ref');
+  if (refCode && /^[A-Fa-f0-9]{8}$/.test(refCode)) {
+    supabaseResponse.cookies.set('soso_ref', refCode.toUpperCase(), {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7,
+      httpOnly: true,
+      sameSite: 'lax',
+    });
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import AppLayout from '@/components/AppLayout';
+import ReferralCard from '@/components/ReferralCard';
 import type { Workflow } from '@/lib/workflow-types';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -57,8 +58,19 @@ export default async function DashboardPage() {
   const workspacesPromise = supabase
     .from('workspaces').select('id').eq('owner_id', user.id);
 
-  const [{ data: workflowData }, { data: allExecData }, { data: workspaceData }] =
-    await Promise.all([workflowsPromise, allExecsPromise, workspacesPromise]);
+  // 4. Referral info (bonus_credits, referral count)
+  const planRowPromise = supabase
+    .from('user_plans').select('bonus_credits, current_period_end').eq('user_id', user.id).single();
+  const referralCountPromise = supabase
+    .from('referrals').select('id', { count: 'exact', head: true }).eq('referrer_id', user.id);
+
+  const [
+    { data: workflowData },
+    { data: allExecData },
+    { data: workspaceData },
+    { data: planRow },
+    { count: referralCount },
+  ] = await Promise.all([workflowsPromise, allExecsPromise, workspacesPromise, planRowPromise, referralCountPromise]);
 
   const workflows: Workflow[] = workflowData ?? [];
   const allExecs = allExecData ?? [];
@@ -77,24 +89,19 @@ export default async function DashboardPage() {
   // Stats
   const totalExecs = allExecs.length;
 
-  // Credits remaining
-  let creditsRemaining = -1; // sentinel: unlimited (shouldn't be shown)
+  // Credits remaining (base allowance + bonus_credits from referrals)
+  const bonusCredits = planRow?.bonus_credits ?? 0;
+  let creditsRemaining = 0;
   let creditsAllowance = 0;
   {
     let periodStart: string | null = null;
-    let allowance: number;
+    let baseAllowance: number;
 
     if (plan === 'free') {
-      allowance = FREE_LIFETIME_CREDITS;
+      baseAllowance = FREE_LIFETIME_CREDITS;
       periodStart = null; // all-time
     } else {
-      allowance = plan === 'enterprise' ? ENTERPRISE_PERIOD_CREDITS : PRO_PERIOD_CREDITS;
-      const { data: planRow } = await supabase
-        .from('user_plans')
-        .select('current_period_end')
-        .eq('user_id', user.id)
-        .single();
-
+      baseAllowance = plan === 'enterprise' ? ENTERPRISE_PERIOD_CREDITS : PRO_PERIOD_CREDITS;
       if (planRow?.current_period_end) {
         const periodEnd = new Date(planRow.current_period_end);
         periodEnd.setMonth(periodEnd.getMonth() - 1);
@@ -109,8 +116,9 @@ export default async function DashboardPage() {
       ? allExecs.filter(e => e.created_at >= periodStart!)
       : allExecs;
     const creditsUsed = periodExecs.reduce((sum, e) => sum + ((e as any).credits_used ?? 1), 0);
-    creditsRemaining = Math.max(0, allowance - creditsUsed);
-    creditsAllowance = allowance;
+    const effectiveAllowance = baseAllowance + bonusCredits;
+    creditsRemaining = Math.max(0, effectiveAllowance - creditsUsed);
+    creditsAllowance = effectiveAllowance;
   }
 
   // Most-used workflows (top 3)
@@ -302,6 +310,13 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
+
+        {/* ── Referral Card ── */}
+        <ReferralCard
+          referralCode={user.id.substring(0, 8).toUpperCase()}
+          referralCount={referralCount ?? 0}
+          bonusCredits={bonusCredits}
+        />
 
       </div>
     </AppLayout>

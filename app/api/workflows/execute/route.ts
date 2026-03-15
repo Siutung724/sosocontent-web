@@ -87,18 +87,21 @@ export async function POST(req: NextRequest): Promise<NextResponse<ExecuteWorkfl
       let periodStart: string | null = null;
       let allowance: number;
 
+      // Always fetch user_plans for bonus_credits (+ current_period_end for paid)
+      const { data: planRow } = await supabase
+        .from('user_plans')
+        .select('bonus_credits, current_period_end')
+        .eq('user_id', user.id)
+        .single();
+      const bonusCredits = planRow?.bonus_credits ?? 0;
+
       if (plan === 'free') {
         // Free: lifetime one-time allotment — no date filter
-        allowance = FREE_LIFETIME_CREDITS;
+        allowance = FREE_LIFETIME_CREDITS + bonusCredits;
         periodStart = null;
       } else {
-        // Pro / Enterprise: per billing period (no rollover)
-        allowance = plan === 'enterprise' ? ENTERPRISE_PERIOD_CREDITS : PRO_PERIOD_CREDITS;
-        const { data: planRow } = await supabase
-          .from('user_plans')
-          .select('current_period_end')
-          .eq('user_id', user.id)
-          .single();
+        // Pro / Enterprise: per billing period (no rollover) + bonus on top
+        allowance = (plan === 'enterprise' ? ENTERPRISE_PERIOD_CREDITS : PRO_PERIOD_CREDITS) + bonusCredits;
 
         if (planRow?.current_period_end) {
           const periodEnd = new Date(planRow.current_period_end);

@@ -55,18 +55,20 @@ export default async function WorkflowPage({ params }: PageProps) {
 
   if (user) {
     let periodStart: string | null = null;
-    let allowance: number;
+    let baseAllowance: number;
+
+    const { data: planRow } = await supabase
+      .from('user_plans')
+      .select('bonus_credits, current_period_end')
+      .eq('user_id', user.id)
+      .single();
+    const bonusCredits = planRow?.bonus_credits ?? 0;
 
     if (plan === 'free') {
-      allowance = FREE_LIFETIME_CREDITS;
+      baseAllowance = FREE_LIFETIME_CREDITS;
       periodStart = null; // all-time
     } else {
-      allowance = plan === 'enterprise' ? ENTERPRISE_PERIOD_CREDITS : PRO_PERIOD_CREDITS;
-      const { data: planRow } = await supabase
-        .from('user_plans')
-        .select('current_period_end')
-        .eq('user_id', user.id)
-        .single();
+      baseAllowance = plan === 'enterprise' ? ENTERPRISE_PERIOD_CREDITS : PRO_PERIOD_CREDITS;
 
       if (planRow?.current_period_end) {
         const periodEnd = new Date(planRow.current_period_end);
@@ -89,7 +91,7 @@ export default async function WorkflowPage({ params }: PageProps) {
       (sum, row) => sum + (row.credits_used ?? 1),
       0,
     );
-    creditsRemaining = Math.max(0, allowance - used);
+    creditsRemaining = Math.max(0, baseAllowance + bonusCredits - used);
   }
 
   return (
