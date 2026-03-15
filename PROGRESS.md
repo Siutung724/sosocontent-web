@@ -189,3 +189,4 @@ Phase 6 — 數字人影片（企業版）🚫
 **未來規劃：**
 3. 數字人影片（D-ID API）— 企業版專屬功能
 4. 社交媒體直接排程發佈（Instagram Graph API）
+5. **Supabase Custom Domain** — Google 登入畫面顯示 `sosocontent.ai` 而非 Supabase URL；需升級 Supabase Pro plan（$25+/月）；現階段功能正常，純品牌顯示問題，待業務成熟後再考慮
